@@ -11,9 +11,9 @@ def detect_file_type(file_path: str | Path) -> str | None:
     """
     Detect file type based on content (magic bytes) rather than extension.
     
-    Reads the first 32 bytes to identify:
-    - CR3 (Canon RAW 3): Contains JPEG header + specific Canon markers
-    - JPG/JPEG: Standard JPEG file format
+    Identifies file types by checking magic bytes:
+    - CR3 (Canon RAW 3): ISO Base Media File Format with 'ftypcrx ' at offset 4
+    - JPG/JPEG: Standard JPEG file format starting with FF D8 FF
     
     Args:
         file_path: Path to the file to detect
@@ -27,31 +27,19 @@ def detect_file_type(file_path: str | Path) -> str | None:
         with open(file_path, 'rb') as f:
             header = f.read(32)
         
-        if len(header) < 4:
+        if len(header) < 12:
             return None
         
+        # CR3 files use ISO Base Media File Format
+        # Signature: 'ftypcrx ' at byte offset 4-11
+        if header[4:12] == b'ftypcrx ':
+            return 'cr3'
+        
         # JPEG files start with FF D8 FF
-        # CR3 files are JPEG-based containers, so they also start with FF D8 FF
         if header[0:3] == b'\xff\xd8\xff':
-            # Check if it's a CR3 file by looking for specific markers
-            # CR3 files contain "ftypcrx" or similar Canon markers
-            # Let's read more to be sure
-            with open(file_path, 'rb') as f:
-                # Read first 64 bytes to check for CR3 signature
-                full_header = f.read(64)
-                
-                # CR3 files have "ftyp" at offset 4 and "crx" nearby
-                if b'ftypcrx' in full_header or b'crx ' in full_header:
-                    return 'cr3'
-                
-                # Also check for Canon-specific markers in EXIF data
-                if b'Canon' in full_header or b'CR3' in full_header:
-                    return 'cr3'
-            
-            # If it starts with JPEG signature but no CR3 markers, it's a JPEG
             return 'jpg'
         
-        # Check for JFIF header (another JPEG variant)
+        # Check for JFIF or EXIF headers (JPEG variants)
         if b'JFIF' in header or b'EXIF' in header:
             return 'jpg'
         
