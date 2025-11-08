@@ -30,7 +30,7 @@ jobs:
       
       - name: Build executable
         run: |
-          uv run pyinstaller app.py --onefile --noconsole --name DirSync-Windows --uac-admin --icon=assets/SnP-ImagerSyncIcon.png --add-data "assets;assets" --clean
+          uv run pyinstaller app.py --onefile --noconsole --name DirSync-Windows --uac-admin --icon=assets/DirSync-Windows.png --add-data "assets;assets" --clean
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
