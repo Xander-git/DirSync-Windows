@@ -1,7 +1,0 @@
-# DirSync-Windows Dependencies
-# For PyInstaller builds and CI/CD
-
-watchdog>=6.0.0
-pystray>=0.19.5
-Pillow>=12.0.0
-
