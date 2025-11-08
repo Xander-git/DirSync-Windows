@@ -32,7 +32,7 @@ jobs:
       
       - name: Run unit tests
         run: |
-          pytest -v --maxfail=1 --disable-warnings --tb=short
+          uv run pytest -v --maxfail=1 --disable-warnings --tb=short
       
       - name: Upload test results
         if: always()
