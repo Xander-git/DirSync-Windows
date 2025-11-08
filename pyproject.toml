@@ -1,0 +1,22 @@
+[project]
+name = "DirSync-Windows"
+version = "0.1.0"
+description = "Directory sync watcher with content-based file renaming for CR3/JPG files"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pillow>=12.0.0",
+    "pystray>=0.19.5",
+    "watchdog>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-timeout>=2.0.0",
+]
+
+[tool.uv]
+required-environments = [
+    "sys_platform == 'win32' and platform_machine == 'x86_64'",
+]

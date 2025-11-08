@@ -1,0 +1,43 @@
+name: Build Windows Executable
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+      
+      - name: Build executable
+        run: |
+          pyinstaller app.py --onefile --noconsole --name DirSync-Windows --uac-admin --icon=assets/SnP-ImagerSyncIcon.png --add-data "assets;assets" --clean
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DirSync-Windows-exe
+          path: dist/DirSync-Windows.exe
+          retention-days: 90
+      
+      - name: Create release (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/DirSync-Windows.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
